@@ -5,7 +5,13 @@ SRCS_PATH =./
 OBJS_PATH = ./
 
 SRCS_NAME = pipex.c \
-			ft_split.c
+			ft_split.c \
+			ft_strdup.c \
+			ft_strjoin.c \
+			ft_strncmp.c \
+			ft_substr.c \
+			ft_strlen.c \
+			helpers.c
 
 
 SRCS = $(addprefix $(SRCS_PATH)/,$(SRCS_NAME))
