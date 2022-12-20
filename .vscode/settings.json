@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "*.ejs": "plaintext",
+    "gnl.h": "c",
+    "__locale": "c",
+    "cstring": "c"
+  }
+}

@@ -6,12 +6,15 @@ OBJS_PATH = ./
 
 SRCS_NAME = pipex.c \
 			ft_split.c \
-			ft_strdup.c \
-			ft_strjoin.c \
 			ft_strncmp.c \
-			ft_substr.c \
-			ft_strlen.c \
-			helpers.c
+			ft_putnbr_fd.c \
+			ft_putstr_fd.c \
+			helpers.c \
+			initialization.c \
+			execution.c \
+			parse.c \
+			gnl.c \
+			gnl_utils.c
 
 
 SRCS = $(addprefix $(SRCS_PATH)/,$(SRCS_NAME))
@@ -29,7 +32,6 @@ OBJS = ${SRCS:.c=.o}
 	$(CC) -o $@ -c $<
 
 ${NAME} : ${OBJS}
-	# $(CC)   -L.  -g  -lmlx -lGLEW -lglfw -framework OpenGL -framework AppKit  $(OBJS) -o ${NAME}
 	$(CC)    $(OBJS) -o ${NAME}
 
 all : ${NAME}
@@ -42,6 +44,6 @@ fclean : clean
 
 re : fclean all
 
-	
+bonus : fclean all
 
 .PHONY : all clean fclean re

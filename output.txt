@@ -1,2 +1,0 @@
-in parent process
-hello world

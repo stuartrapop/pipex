@@ -6,7 +6,7 @@
 /*   By: srapopor <srapopor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 17:16:32 by srapopor          #+#    #+#             */
-/*   Updated: 2022/12/14 17:28:45 by srapopor         ###   ########.fr       */
+/*   Updated: 2022/12/20 18:34:32 by srapopor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,14 @@
 #include <fcntl.h>
 #include "pipex.h"
 #include <stdlib.h>
+#include <errno.h>
 
 void	ft_free_char_array(char **arr[])
 {
 	int	index;
 
+	if (*arr == NULL)
+		return ;
 	index = 0;
 	while ((*arr)[index] != NULL)
 	{
@@ -30,121 +33,88 @@ void	ft_free_char_array(char **arr[])
 	free(*arr);
 }
 
-char	**ft_get_paths(char *env[])
+int	ft_error(char *str)
+{
+	ft_putstr_fd(str, 2);
+	return (1);
+}
+
+int	ft_waitallpids(t_pipex pipex)
 {
 	int		index;
-	char	*paths;
-	char	**bin_paths;
+	int		status;
+	int		status_code;
+	int		err;
 
 	index = 0;
-	while (env[index] != NULL)
+	status_code = 0;
+	while (index < pipex.num_commands)
 	{
-		if (ft_strncmp(env[index], "PATH=",5) == 0)
+		waitpid(pipex.pid[index], &status, 0);
+		err = errno;
+		ft_error("errno : ");
+		ft_putnbr_fd(err, 2);
+		ft_error("\n");
+		if (WIFEXITED(status))
 		{
-			paths = ft_strdup(&env[index][5]);
-			if (!paths)
-				return (NULL);
-			bin_paths = ft_split(paths, ':');
-			if (!bin_paths)
-			{
-				free(paths);
-				return (NULL);
-			}
-			free(paths);
+			status_code = WEXITSTATUS(status);
 		}
+		else
+			status_code = 0;
 		index++;
 	}
-	return (bin_paths);
+	return (status_code);
 }
 
-char	*get_path(char *paths[], char *operation)
+int	ft_clean_structure(t_pipex *pipex)
 {
-	char	*tmp;
-	char	*test_path;
-	int		index;
+	int	index;
 
+	if (pipex->pipe != NULL)
+		free(pipex->pipe);
+	if (pipex->pid != NULL)
+		free(pipex->pid);
+	if (pipex->paths_bin != NULL)
+		ft_free_char_array(&(pipex->paths_bin));
 	index = 0;
-	while (paths[index] != NULL)
+	while (index < pipex->num_commands)
 	{
-		tmp = ft_strjoin(paths[index], "/");
-		test_path = ft_strjoin(tmp, operation);
-		free(tmp);
-		if (access(test_path, X_OK) == 0)
-		{
-			printf("bin path found %s\n", test_path);
-			return (test_path);
-		}
-		free(test_path);
+		if (pipex->fd[index] != NULL)
+			free(pipex->fd[index]);
+		ft_free_char_array((&(pipex->cmd_param[index])));
+		if (pipex->cmd_path[index] != NULL)
+			free(pipex->cmd_path[index]);
 		index++;
 	}
-	return (NULL);
-}
-
-int	ft_process_args(int argc, char *argv[], char *env[], t_pipex *pipex)
-{
-	if (argc != 5)
-		return (1);
-	pipex->input_file = argv[1];
-	pipex->output_file = argv[4];
-	pipex->params_cmd1 = ft_split(argv[2], ' ');
-	pipex->params_cmd2 = ft_split(argv[3], ' ');
-	pipex->paths_bin = ft_get_paths(env);
-	pipex->path_cmd1 = get_path(pipex->paths_bin, pipex->params_cmd1[0]);
-	pipex->path_cmd2 = get_path(pipex->paths_bin, pipex->params_cmd2[0]);
-	pipex->env = env;
-	return (0);
-}
-
-int ft_error(char *str){
-	printf("error %s \n", str);
-	if (ft_strncmp(str, "pipe", 5) == 0)
-		return (1);
-	return (2);
+	free(pipex->cmd_path);
+	if (pipex->cmd_param != NULL)
+		free(pipex->cmd_param);
+	if (pipex->fd != NULL)
+		free(pipex->fd);
+	return (1);
 }
 
 int	main(int argc, char *argv[], char *env[])
 {
 	t_pipex	pipex;
+	int		index;
 
-	ft_process_args(argc, argv, env, &pipex);
-	if (pipe(pipex.fd) == -1)
-		return (ft_error("pipe"));
-	pipex.pid[0] = fork();
-	if (pipex.pid[0] == -1)
-		return (ft_error("fork"));
-	if (pipex.pid[0] == 0)
+	if (argc < 5)
+		return (ft_error("Invalid number of arguments.\n"));
+	if (ft_process_args(argc, argv, env, &pipex) != 0)
+		return (2);
+	ft_open_pipes(&pipex);
+	index = 0;
+	while (index < pipex.num_commands)
 	{
-		printf("in child process\n");
-		pipex.input_fd = open(argv[1], O_RDONLY);
-		if (pipex.input_fd == -1)
-			return (ft_error("input error"));
-		dup2(pipex.input_fd, STDIN_FILENO);
-		dup2(pipex.fd[1], 1);
-		close(pipex.fd[0]);
-		close(pipex.fd[1]);
-		close(pipex.input_fd);
-		execve(pipex.path_cmd1, pipex.params_cmd1, env);
+		pipex.pid[index] = fork();
+		if (pipex.pid[index] == -1)
+			return (ft_error("fork"));
+		if (pipex.pid[index] == 0)
+			exec_command(index, &pipex, env);
+		index++;
 	}
-	pipex.pid[1] = fork();
-	if (pipex.pid[1] == -1)
-		return (ft_error("fork"));
-	if (pipex.pid[1] == 0)
-	{
-		printf("in 2nd child\n");
-		pipex.output_fd = open(argv[4], O_CREAT | O_RDWR | O_TRUNC);
-		if (pipex.output_fd == -1)
-			return (ft_error("output error"));
-		dup2(pipex.output_fd, STDOUT_FILENO);
-		dup2(pipex.fd[0], STDIN_FILENO);
-		close(pipex.fd[0]);
-		close(pipex.fd[1]);
-		close(pipex.output_fd);
-		//printf("file number %d\n", pipex.output_fd);
-		execve(pipex.path_cmd2, pipex.params_cmd2, env);
-	}
-	waitpid(pipex.pid[0], 0, -1);
-	waitpid(pipex.pid[1], 0, -1);
-	// while (waitpid(-1, 0, 0) != -1)
-	// 	continue;
-	return (0);
+	ft_close_fds(-2, &pipex);
+	ft_clean_structure(&pipex);
+	return (ft_waitallpids(pipex));
 }

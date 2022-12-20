@@ -1,21 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stuartrapoport <stuartrapoport@student.    +#+  +:+       +#+        */
+/*   By: srapopor <srapopor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/08 15:02:12 by srapopor          #+#    #+#             */
-/*   Updated: 2022/09/12 20:10:45 by stuartrapop      ###   ########.fr       */
+/*   Created: 2022/09/14 17:05:59 by srapopor          #+#    #+#             */
+/*   Updated: 2022/12/18 13:26:07 by srapopor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_strlen(const char *str)
-{
-	int	count;
+#include <unistd.h>
+#include "pipex.h"
 
-	count = 0;
-	while (str[count] != '\0')
-		count++;
-	return (count);
+void	ft_putstr_fd(char *s, int fd)
+{
+	write(fd, s, ft_strlen(s));
 }
