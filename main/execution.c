@@ -6,7 +6,7 @@
 /*   By: srapopor <srapopor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/16 15:40:58 by srapopor          #+#    #+#             */
-/*   Updated: 2022/12/20 15:51:28 by srapopor         ###   ########.fr       */
+/*   Updated: 2022/12/21 10:15:24 by srapopor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ int	ft_stdin_from_heredoc(t_pipex *pipex)
 	int		file;
 
 	file = open("heredoc.txt", O_CREAT | O_WRONLY | O_TRUNC, 0000666);
+	if (file == -1)
+		return (ft_error("pipex: problem opening temp file\n"));
 	buf = NULL;
 	while (1)
 	{

@@ -6,7 +6,7 @@
 /*   By: srapopor <srapopor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 17:16:32 by srapopor          #+#    #+#             */
-/*   Updated: 2022/12/20 18:34:32 by srapopor         ###   ########.fr       */
+/*   Updated: 2022/12/21 10:04:16 by srapopor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,17 +44,12 @@ int	ft_waitallpids(t_pipex pipex)
 	int		index;
 	int		status;
 	int		status_code;
-	int		err;
 
 	index = 0;
 	status_code = 0;
 	while (index < pipex.num_commands)
 	{
 		waitpid(pipex.pid[index], &status, 0);
-		err = errno;
-		ft_error("errno : ");
-		ft_putnbr_fd(err, 2);
-		ft_error("\n");
 		if (WIFEXITED(status))
 		{
 			status_code = WEXITSTATUS(status);
@@ -86,7 +81,8 @@ int	ft_clean_structure(t_pipex *pipex)
 			free(pipex->cmd_path[index]);
 		index++;
 	}
-	free(pipex->cmd_path);
+	if (pipex->cmd_path != NULL)
+		free(pipex->cmd_path);
 	if (pipex->cmd_param != NULL)
 		free(pipex->cmd_param);
 	if (pipex->fd != NULL)
@@ -116,5 +112,5 @@ int	main(int argc, char *argv[], char *env[])
 	}
 	ft_close_fds(-2, &pipex);
 	ft_clean_structure(&pipex);
-	return (ft_waitallpids(pipex));
+	exit (ft_waitallpids(pipex));
 }

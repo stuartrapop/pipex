@@ -1,10 +1,11 @@
 NAME = pipex
 
-SRCS_PATH =./
+SRCS_PATH_GNL = ./gnl
+SRCS_PATH_MAIN = ./main
 
 OBJS_PATH = ./
 
-SRCS_NAME = pipex.c \
+SRCS_NAME_MAIN = pipex.c \
 			ft_split.c \
 			ft_strncmp.c \
 			ft_putnbr_fd.c \
@@ -13,14 +14,16 @@ SRCS_NAME = pipex.c \
 			initialization.c \
 			execution.c \
 			parse.c \
-			gnl.c \
+
+SRCS_NAME_GNL = gnl.c \
 			gnl_utils.c
 
 
-SRCS = $(addprefix $(SRCS_PATH)/,$(SRCS_NAME))
+SRCS = $(addprefix $(SRCS_PATH_MAIN)/,$(SRCS_NAME_MAIN))
+SRCS += $(addprefix $(SRCS_PATH_GNL)/,$(SRCS_NAME_GNL))
 
 
-HEADER_DIR = ./
+HEADER_DIR = ./headers
 
 FLAG = -Wall -Wextra -Werror -I$(HEADER_DIR)
 
@@ -35,15 +38,24 @@ ${NAME} : ${OBJS}
 	$(CC)    $(OBJS) -o ${NAME}
 
 all : ${NAME}
+	@echo "$(COLOUR_RED)Make ${NAME} completed$(COLOUR_END)"
 
 clean :
 	rm -f ${OBJS} $(OBJS_BONUS)
+	@echo "$(COLOUR_GREEN)Make Clean Executed$(COLOUR_END)"
 
 fclean : clean
 	rm -f ${NAME}
+	@echo "$(COLOUR_RED)Executable ${NAME} removed $(COLOUR_END)"
 
 re : fclean all
 
 bonus : fclean all
+	@echo "$(COLOUR_RED)Make Bonus$(COLOUR_END)"
 
 .PHONY : all clean fclean re
+
+COLOUR_GREEN=\033[0;32m
+COLOUR_RED=\033[0;31m
+COLOUR_BLUE=\033[0;34m
+COLOUR_END=\033[0m

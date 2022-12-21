@@ -6,7 +6,7 @@
 /*   By: srapopor <srapopor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/14 11:41:12 by srapopor          #+#    #+#             */
-/*   Updated: 2022/12/20 15:51:50 by srapopor         ###   ########.fr       */
+/*   Updated: 2022/12/21 10:04:13 by srapopor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,18 @@
 # include	<string.h>
 
 typedef struct s_pipex {
+	char	**env;
 	int		*pipe;
-	int		**fd;
 	int		*pid;
+	int		input_fd;
+	int		output_fd;
 	char	*input_file;
 	char	*output_file;
-	char	**env;
-	char	**paths_bin;
+	int		**fd;
 	int		num_commands;
+	char	**paths_bin;
 	char	**cmd_path;
 	char	***cmd_param;
-	int		output_fd;
-	int		input_fd;
 	int		here_doc;
 	char	*limiter;
 
