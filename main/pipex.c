@@ -6,7 +6,7 @@
 /*   By: srapopor <srapopor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 17:16:32 by srapopor          #+#    #+#             */
-/*   Updated: 2022/12/21 10:04:16 by srapopor         ###   ########.fr       */
+/*   Updated: 2022/12/28 12:27:13 by srapopor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ int	main(int argc, char *argv[], char *env[])
 {
 	t_pipex	pipex;
 	int		index;
+	int		exit_code;
 
 	if (argc < 5)
 		return (ft_error("Invalid number of arguments.\n"));
@@ -111,6 +112,7 @@ int	main(int argc, char *argv[], char *env[])
 		index++;
 	}
 	ft_close_fds(-2, &pipex);
+	exit_code = ft_waitallpids(pipex);
 	ft_clean_structure(&pipex);
-	exit (ft_waitallpids(pipex));
+	return (exit_code);
 }

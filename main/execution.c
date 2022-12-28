@@ -6,7 +6,7 @@
 /*   By: srapopor <srapopor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/16 15:40:58 by srapopor          #+#    #+#             */
-/*   Updated: 2022/12/21 10:15:24 by srapopor         ###   ########.fr       */
+/*   Updated: 2022/12/28 10:57:26 by srapopor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,8 @@ int	ft_stdout_to_file(t_pipex *pipex)
 	}
 	if (dup2(pipex->output_fd, STDOUT_FILENO) == -1)
 		return (ft_error("dup error"));
-	close(pipex->output_fd);
+	if (close(pipex->output_fd) == -1)
+		return (ft_error("closing output error"));
 	return (0);
 }
 
