@@ -46,6 +46,7 @@ clean :
 
 fclean : clean
 	rm -f ${NAME}
+	rm -f "heredoc.txt"
 	@echo "$(COLOUR_RED)Executable ${NAME} removed $(COLOUR_END)"
 
 re : fclean all
